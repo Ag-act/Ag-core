@@ -44,16 +44,16 @@ impl Config {
         self.projects = projects;
     }
 
-    pub fn get_projects(&self) -> &Vec<PathBuf> {
-        &self.projects
+    pub fn get_projects(&self) -> Vec<PathBuf> {
+        self.projects.clone()
     }
 
     pub fn get_version(&self) -> &AgactVersions {
         &self.version
     }
 
-    pub fn get_homes(&self) -> &Vec<PathBuf> {
-        &self.home
+    pub fn get_homes(&self) -> Vec<PathBuf> {
+        self.home.clone()
     }
 }
 
