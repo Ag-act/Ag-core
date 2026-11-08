@@ -5,11 +5,21 @@ use chrono::{DateTime, Local};
 use confy::ConfyError;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Default, Debug)]
-struct Config {
+#[derive(Serialize, Deserialize)]
+pub struct Config {
     version: AgactVersions,
     home: PathBuf,
     projects: Vec<PathBuf>,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            version : AgactVersions::V1,
+            home : PathBuf::default(),
+            projects : Vec::new()
+        }
+    }
 }
 
 impl Config {
@@ -18,7 +28,7 @@ impl Config {
         Ok(())
     }
 
-    fn load() -> Result<Self, ConfyError> {
+    pub fn load() -> Result<Self, ConfyError> {
         confy::load("Sunn1t", "Ag-act")
     }
 }
