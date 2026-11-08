@@ -162,24 +162,21 @@ impl From<&TasksV1> for TasksUniversal {
 
 pub struct DataHandler {
     app_data: HomeData,
-    path_buf: PathBuf
 }
 
 impl DataHandler {
-    pub fn new(data : &String, path_buf: PathBuf) -> Result<DataHandler, toml::de::Error> {
+    pub fn new(data : &String) -> Result<DataHandler, toml::de::Error> {
         let data = DataHandler {
             app_data: {
                 toml::from_str(&data)?
             },
-            path_buf
         };
         Ok(data)
     }
 
-    pub fn v1(&self, path_buf: PathBuf) -> DataHandler {
+    pub fn v1(path_buf: PathBuf) -> DataHandler {
         DataHandler {
             app_data: HomeData::V1(TOMLdataV1::default()),
-            path_buf
         }
     }
 
@@ -207,12 +204,8 @@ impl DataHandler {
         }
     }
 
-    pub fn get_path_buf(&self) -> PathBuf {
-        self.path_buf.clone()
-    }
-
-    pub fn write(&self) -> Result<(), toml::ser::Error>{
-        fs::write(self.path_buf.as_path(), toml::to_string(&self.app_data)?).expect("ERROR: Write Failed");
+    pub fn write(&self, path_buf: PathBuf) -> Result<(), toml::ser::Error>{
+        fs::write(path_buf.as_path(), toml::to_string(&self.app_data)?).expect("ERROR: Write Failed");
         Ok(())
     }
 }
