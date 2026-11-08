@@ -174,7 +174,7 @@ impl DataHandler {
         Ok(data)
     }
 
-    pub fn v1(path_buf: PathBuf) -> DataHandler {
+    pub fn v1() -> DataHandler {
         DataHandler {
             app_data: HomeData::V1(TOMLdataV1::default()),
         }
