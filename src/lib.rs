@@ -31,27 +31,27 @@ impl Config {
     pub fn load() -> Result<Self, ConfyError> {
         confy::load("Sunn1t", "Ag-act")
     }
-    
+
     pub fn set_versions(&mut self, versions: AgactVersions) {
         self.version = versions;
     }
-    
+
     pub fn set_home(&mut self, home: PathBuf) {
         self.home = home;
     }
-    
+
     pub fn set_projects(&mut self, projects: Vec<PathBuf>) {
         self.projects = projects;
     }
-    
+
     pub fn get_projects(&self) -> &Vec<PathBuf> {
         &self.projects
     }
-    
-    pub fn get_versions(&self) -> &AgactVersions {
+
+    pub fn get_version(&self) -> &AgactVersions {
         &self.version
     }
-    
+
     pub fn get_home(&self) -> &PathBuf {
         &self.home
     }
