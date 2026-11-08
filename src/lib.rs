@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     version: AgactVersions,
-    home: PathBuf,
+    home: Vec<PathBuf>,
     projects: Vec<PathBuf>,
 }
 
@@ -16,7 +16,7 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             version : AgactVersions::V1,
-            home : PathBuf::default(),
+            home : Vec::new(),
             projects : Vec::new()
         }
     }
@@ -24,19 +24,19 @@ impl Default for Config {
 
 impl Config {
     pub fn write(&self) -> Result<(), ConfyError> {
-        confy::store("Sunn1t", "Ag-act", self)?;
+        confy::store("Ag-act", None, self)?;
         Ok(())
     }
 
     pub fn load() -> Result<Self, ConfyError> {
-        confy::load("Sunn1t", "Ag-act")
+        confy::load("Ag-act", None)
     }
 
-    pub fn set_versions(&mut self, versions: AgactVersions) {
+    pub fn set_version(&mut self, versions: AgactVersions) {
         self.version = versions;
     }
 
-    pub fn set_home(&mut self, home: PathBuf) {
+    pub fn set_home(&mut self, home: Vec<PathBuf>) {
         self.home = home;
     }
 
@@ -52,7 +52,7 @@ impl Config {
         &self.version
     }
 
-    pub fn get_home(&self) -> &PathBuf {
+    pub fn get_homes(&self) -> &Vec<PathBuf> {
         &self.home
     }
 }
