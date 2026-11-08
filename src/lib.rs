@@ -23,7 +23,7 @@ impl Default for Config {
 }
 
 impl Config {
-    fn write(&self) -> Result<(), ConfyError> {
+    pub fn write(&self) -> Result<(), ConfyError> {
         confy::store("Sunn1t", "Ag-act", self)?;
         Ok(())
     }
