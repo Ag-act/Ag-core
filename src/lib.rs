@@ -1,6 +1,27 @@
+use std::fs;
 use std::io::Error;
+use std::path::PathBuf;
 use chrono::{DateTime, Local};
+use confy::ConfyError;
 use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Default, Debug)]
+struct Config {
+    version: AgactVersions,
+    home: PathBuf,
+    projects: Vec<PathBuf>,
+}
+
+impl Config {
+    fn write(&self) -> Result<(), ConfyError> {
+        confy::store("Sunn1t", "Ag-act", self)?;
+        Ok(())
+    }
+
+    fn load() -> Result<Self, ConfyError> {
+        confy::load("Sunn1t", "Ag-act")
+    }
+}
 
 #[derive(PartialEq, Debug, Serialize, Deserialize, Default)]
 pub enum AgactVersions {
@@ -14,7 +35,7 @@ pub(crate) struct TOMLEmpty {
 }
 
 // Toml Data V1
-#[derive(Deserialize, Debug)]
+#[derive(Serialize,Deserialize, Debug)]
 pub(crate) struct TOMLdataV1 {
     daily_tasks: Vec<DailyV1>,
     to_not: Vec<ToNotV1>,
@@ -27,19 +48,19 @@ impl Default for TOMLdataV1 {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize,Deserialize, Debug)]
 struct DailyV1 {
     title: String,
     description: String,
     last_completed: DateTime<Local>,
 }
-#[derive(Deserialize, Debug)]
+#[derive(Serialize,Deserialize, Debug)]
 struct ToNotV1 {
     title: String,
     description: String,
     last_done: DateTime<Local>,
 }
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Serialize,Deserialize, Debug, Clone)]
 struct TasksV1 {
     title: String,
     description: String,
@@ -50,11 +71,9 @@ struct TasksV1 {
 
 
 // Universal
-#[derive(Deserialize, Debug)]
+#[derive(Serialize ,Deserialize, Debug)]
 #[serde(tag = "version", rename_all = "kebab-case")]
-pub(crate) enum AppData {
-    #[serde(rename = "0")]
-    Empty(TOMLEmpty),
+pub(crate) enum HomeData {
     #[serde(rename = "1")]
     V1(TOMLdataV1),
 }
@@ -108,80 +127,58 @@ impl From<&TasksV1> for TasksUniversal {
 }
 
 pub struct DataHandler {
-    app_data: AppData
-}
-impl Default for DataHandler {
-    fn default() -> Self {
-        Self {app_data: AppData::V1(TOMLdataV1::default())}
-    }
+    app_data: HomeData,
+    path_buf: PathBuf
 }
 
 impl DataHandler {
-    pub fn new(data : &String) -> DataHandler {
-        DataHandler {
+    pub fn new(data : &String, path_buf: PathBuf) -> Result<DataHandler, toml::de::Error> {
+        let data = DataHandler {
             app_data: {
-                toml::from_str(&data).unwrap_or(AppData::Empty(TOMLEmpty{error : "Failed To Parse Data".into()}))
-            }
-        }
+                toml::from_str(&data)?
+            },
+            path_buf
+        };
+        Ok(data)
     }
 
-    pub fn v1(&self) -> DataHandler {
+    pub fn v1(&self, path_buf: PathBuf) -> DataHandler {
         DataHandler {
-            app_data: AppData::V1(TOMLdataV1::default())
-        }
-    }
-
-    pub fn empty() -> DataHandler {
-        DataHandler {
-            app_data: AppData::Empty(TOMLEmpty::default())
-        }
-    }
-
-    pub fn is_empty(&self) -> bool {
-        match self.app_data {
-            AppData::Empty(_) => true,
-            _ => false
-        }
-    }
-
-    pub fn get_empty_message(&self) -> String {
-        match &self.app_data {
-            AppData::Empty(d) => d.error.clone(),
-            _ => "".to_string(),
+            app_data: HomeData::V1(TOMLdataV1::default()),
+            path_buf
         }
     }
 
     pub fn get_daily_tasks(&self) -> Vec<DailyUniversal> {
         match &self.app_data {
-            AppData::V1(data) => {
+            HomeData::V1(data) => {
                 data.daily_tasks.iter().map(DailyUniversal::from).collect()
             }
-            _ => {Vec::new()}
         }
     }
 
     pub fn get_to_nots(&self) -> Vec<ToNotUniversal> {
         match &self.app_data {
-            AppData::V1(data) => {
+            HomeData::V1(data) => {
                 data.to_not.iter().map(ToNotUniversal::from).collect()
             }
-            _ => {Vec::new()}
         }
     }
 
     pub fn get_tasks(&self) -> Vec<TasksUniversal> {
         match &self.app_data {
-            AppData::V1(data) => {
+            HomeData::V1(data) => {
                 data.tasks.iter().map(TasksUniversal::from).collect()
             }
-            _ => {Vec::new()}
         }
     }
-}
 
-#[derive(Debug, Serialize, Deserialize, Default)]
-#[serde(default)]
-pub struct Settings {
-    pub file_path: String,
-    pub version: AgactVersions,
+    pub fn get_path_buf(&self) -> PathBuf {
+        self.path_buf.clone()
+    }
+
+    pub fn write(&self) -> Result<(), toml::ser::Error>{
+        fs::write(self.path_buf.as_path(), toml::to_string(&self.app_data)?).expect("ERROR: Write Failed");
+        Ok(())
+    }
 }
