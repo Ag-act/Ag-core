@@ -36,7 +36,7 @@ impl Config {
         self.version = versions;
     }
 
-    pub fn set_home(&mut self, home: Vec<PathBuf>) {
+    pub fn set_homes(&mut self, home: Vec<PathBuf>) {
         self.home = home;
     }
 

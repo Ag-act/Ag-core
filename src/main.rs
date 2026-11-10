@@ -1,10 +1,14 @@
-mod gui;
+#[cfg(feature = "cli")]
+mod commands;
 
+#[cfg(feature = "cli")]
 use std::path::PathBuf;
 #[cfg(feature = "cli")]
 use clap::{Parser, Subcommand};
-use color_eyre::eyre;
+#[cfg(feature = "cli")]
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "cli")]
+use crate::commands::SpawnCommand::SpawnSubcommands;
 
 #[cfg(feature = "cli")]
 #[derive(Parser, Debug)]
@@ -21,64 +25,35 @@ struct Args {
 enum Commands {
     Spawn {
         #[command(subcommand)]
-        subcommands: SpawnSubcommands
+        subcommands: SpawnSubcommands,
     }
 
-}
-#[cfg(feature = "cli")]
-#[derive(Subcommand, Debug)]
-enum SpawnSubcommands {
-    Home,
-    Project
 }
 
 #[tokio::main]
 #[cfg(feature = "cli")]
 async fn main() -> color_eyre::Result<()> {
     color_eyre::install()?;
+    let mut config = Ag_act::Config::load()?;
 
     let cli = Args::parse();
 
     match &cli.commands {
-        None => {
-            spawn_gui()?;
-        },
-        Some(Commands::Spawn {subcommands}) => {
+        None => {},
+        Some(Commands::Spawn { subcommands }) => {
             match subcommands {
-                SpawnSubcommands::Home => {
-                    let set_def = asking::yn()
-                        .message("Do you want this to be the default")
-                        .default_value(true)
-                        .ask();
-
-                    match set_def.await {
-                        Ok(true) => {
-
-                        }
-                        Ok(false) => {
-
-                        }
-
-                        Err(e) => {
-                            eyre::bail!("{}", e);
-                        }
-                    }
+                SpawnSubcommands::Home { name } => {
+                    let mut file_name = name.clone();
+                    file_name.push_str(".ag-act");
+                    commands::SpawnCommand::home(&mut config, cli.dir.join(file_name)).await?;
                 },
-                SpawnSubcommands::Project => {}
+                SpawnSubcommands::Project => {
+                    commands::SpawnCommand::project(&mut config).await?;
+                }
             }
         }
     }
 
+    config.write()?;
     Ok(())
-}
-
-#[cfg(feature = "cli")]
-fn spawn_gui() -> std::io::Result<()>  {
-    ratatui::run(gui::app::tui)?;
-    Ok(())
-}
-
-#[cfg(not(feature = "cli"))]
-fn main() {
-    println!("CLI Not active");
 }
