@@ -1,17 +1,13 @@
 [package]
-name = "Ag-act"
+name = "Ag-core"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
+description = "A library to be used to make unified todo managers"
+repository = "https://github.com/Ag-act/Ag-core"
 
 [dependencies]
 chrono = { version = "0.4.45", features = ["serde"] }
 serde = { version = "1.0.229", features = ["derive"] }
 toml = "1.1.6"
-clap = { version = "4.6.7", optional = true, features = ["derive"] }
-color-eyre = { version = "0.6.5", optional = true }
-asking = { version = "0.0.2", optional = true }
-tokio = { version = "1.54.1", features = ["rt", "rt-multi-thread", "macros"] }
 confy = { version = "2.0.0"}
-
-[features]
-cli = ["dep:clap", "dep:asking","dep:color-eyre"]
