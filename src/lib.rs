@@ -74,22 +74,85 @@ pub(crate) enum HomeData {
     V1(HomeDataV1),
 }
 
+#[derive(Clone)]
 pub struct TasksUniversal {
-    pub title: String,
-    pub description: String,
-    pub completed: bool,
-    pub children: Vec<TasksUniversal>,
-    pub category: bool,
+     title: String,
+     description: String,
+     identifier: String,
+     completed: bool,
+     children: Vec<TasksUniversal>,
+     category: bool,
+}
+impl TasksUniversal {
+    pub fn get_title(&self) -> String {
+        self.title.clone()
+    }
+
+    pub fn get_description(&self) -> String {
+        self.description.clone()
+    }
+
+    pub fn get_identifier(&self) -> String {
+        self.identifier.clone()
+    }
+
+    pub fn is_completed(&self) -> bool {
+        self.completed
+    }
+
+    pub fn get_children(&self) -> Vec<TasksUniversal> {
+        self.children.clone()
+    }
+
+    pub fn is_category(&self) -> bool {
+        self.category
+    }
 }
 pub struct DailyUniversal {
-    pub title: String,
-    pub description: String,
-    pub last_completed: DateTime<Local>,
+     title: String,
+     description: String,
+     identifier: String,
+     last_completed: DateTime<Local>,
+}
+impl DailyUniversal {
+    pub fn get_title(&self) -> String {
+        self.title.clone()
+    }
+
+    pub fn get_description(&self) -> String {
+        self.description.clone()
+    }
+
+    pub fn get_identifier(&self) -> String {
+        self.identifier.clone()
+    }
+
+    pub fn last_completed(&self) -> DateTime<Local> {
+        self.last_completed.clone()
+    }
 }
 pub struct ToNotUniversal {
-    pub title: String,
-    pub description: String,
-    pub last_completed: DateTime<Local>,
+     title: String,
+     description: String,
+     identifier: String,
+     last_completed: DateTime<Local>,
+}
+impl ToNotUniversal {
+    pub fn get_title(&self) -> String {
+        self.title.clone()
+    }
+
+    pub fn get_description(&self) -> String {
+        self.description.clone()
+    }
+
+    pub fn get_identifier(&self) -> String {
+        self.identifier.clone()
+    }
+
+    pub fn last_completed(&self) -> DateTime<Local> {
+        self.last_completed.clone()
+    }
 }
 
 impl From<&TimeSinceV1> for ToNotUniversal {
@@ -98,6 +161,7 @@ impl From<&TimeSinceV1> for ToNotUniversal {
             title: v.title.clone(),
             description: v.description.clone(),
             last_completed: v.last_done.clone(),
+            identifier: v.identifier.clone(),
         }
     }
 }
@@ -107,6 +171,7 @@ impl From<&DailyV1> for DailyUniversal {
             title: value.title.clone(),
             description: value.description.clone(),
             last_completed: value.last_completed.clone(),
+            identifier: value.identifier.clone(),
         }
     }
 }
@@ -117,7 +182,8 @@ impl From<&TasksV1> for TasksUniversal {
             description: value.description.clone(),
             completed: value.completed.clone(),
             children: value.children.iter().map(|v| v.into()).collect(),
-            category: value.category.clone()
+            category: value.category.clone(),
+            identifier: value.identifier.clone(),
         }
     }
 }
