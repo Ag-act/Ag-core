@@ -135,7 +135,13 @@ impl DataHandler {
         };
         Ok(data)
     }
-
+    pub fn default(config: Config) -> DataHandler {
+        match config.version {
+            AgactVersions::V1 => {
+                Self::v1()
+            }
+        }
+    }
     pub fn v1() -> DataHandler {
         DataHandler {
             app_data: HomeData::V1(HomeDataV1::default()),
