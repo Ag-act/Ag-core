@@ -1,9 +1,12 @@
+pub mod v1;
+
 use std::fs;
-use std::io::Error;
+use v1::{HomeDataV1, TimeSinceV1, TasksV1};
 use std::path::PathBuf;
 use chrono::{DateTime, Local};
 use confy::ConfyError;
 use serde::{Deserialize, Serialize};
+use crate::v1::DailyV1;
 
 #[derive(Serialize, Deserialize)]
 pub struct Config {
@@ -63,53 +66,12 @@ pub enum AgactVersions {
     V1
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
-pub(crate) struct TOMLEmpty {
-    pub error: String,
-}
-
-// Toml Data V1
-#[derive(Serialize,Deserialize, Debug)]
-pub(crate) struct TOMLdataV1 {
-    daily_tasks: Vec<DailyV1>,
-    to_not: Vec<ToNotV1>,
-    tasks: Vec<TasksV1>,
-}
-
-impl Default for TOMLdataV1 {
-    fn default() -> Self {
-        Self {daily_tasks: vec![], to_not: vec![], tasks: vec![]}
-    }
-}
-
-#[derive(Serialize,Deserialize, Debug)]
-struct DailyV1 {
-    title: String,
-    description: String,
-    last_completed: DateTime<Local>,
-}
-#[derive(Serialize,Deserialize, Debug)]
-struct ToNotV1 {
-    title: String,
-    description: String,
-    last_done: DateTime<Local>,
-}
-#[derive(Serialize,Deserialize, Debug, Clone)]
-struct TasksV1 {
-    title: String,
-    description: String,
-    children: Vec<TasksV1>,
-    completed: bool,
-    category : bool
-}
-
-
 // Universal
 #[derive(Serialize ,Deserialize, Debug)]
 #[serde(tag = "version", rename_all = "kebab-case")]
 pub(crate) enum HomeData {
     #[serde(rename = "1")]
-    V1(TOMLdataV1),
+    V1(HomeDataV1),
 }
 
 pub struct TasksUniversal {
@@ -130,8 +92,8 @@ pub struct ToNotUniversal {
     pub last_completed: DateTime<Local>,
 }
 
-impl From<&ToNotV1> for ToNotUniversal {
-    fn from(v: &ToNotV1) -> Self {
+impl From<&TimeSinceV1> for ToNotUniversal {
+    fn from(v: &TimeSinceV1) -> Self {
         ToNotUniversal {
             title: v.title.clone(),
             description: v.description.clone(),
@@ -176,7 +138,7 @@ impl DataHandler {
 
     pub fn v1() -> DataHandler {
         DataHandler {
-            app_data: HomeData::V1(TOMLdataV1::default()),
+            app_data: HomeData::V1(HomeDataV1::default()),
         }
     }
 
