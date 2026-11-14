@@ -1,19 +1,18 @@
 pub mod v1;
 pub mod universal;
 
-use std::ffi::CString;
 use std::fs;
-use v1::{HomeDataV1, TimeSinceV1, TasksV1};
+use v1::{HomeDataV1};
 use std::path::PathBuf;
 use universal::{DailyUniversal,TasksUniversal,TimeSinceUniversal};
 use confy::ConfyError;
 use serde::{Deserialize, Serialize};
-use crate::v1::{gen_id_v1, DailyV1};
+use crate::v1::{gen_id_v1};
 
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     version: AgactVersions,
-    home: Vec<PathBuf>,
+    home: PathBuf,
     projects: Vec<PathBuf>,
 }
 
@@ -21,7 +20,7 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             version : AgactVersions::V1,
-            home : Vec::new(),
+            home : PathBuf::new(),
             projects : Vec::new()
         }
     }
@@ -41,7 +40,7 @@ impl Config {
         self.version = versions;
     }
 
-    pub fn set_homes(&mut self, home: Vec<PathBuf>) {
+    pub fn set_home(&mut self, home: PathBuf) {
         self.home = home;
     }
 
@@ -57,7 +56,7 @@ impl Config {
         &self.version
     }
 
-    pub fn get_homes(&self) -> Vec<PathBuf> {
+    pub fn get_homes(&self) -> PathBuf {
         self.home.clone()
     }
 }
