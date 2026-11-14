@@ -9,8 +9,6 @@ pub(crate) struct HomeDataV1 {
     pub tasks: Vec<TasksV1>,
 }
 
-
-
 #[derive(Serialize,Deserialize, Debug)]
 pub(crate) struct DailyV1 {
     pub title: String,
@@ -35,7 +33,20 @@ pub(crate) struct TasksV1 {
     pub identifier: String,
 }
 
-pub(crate) fn gen_id_v1() -> String {
+pub(crate) fn gen_id_v1(data: &HomeDataV1) -> String {
+    let mut id = gen_nanoid_v1();
+    
+    while (data.tasks.iter().any(|t| t.identifier == id) ||
+        data.daily_tasks.iter().any(|t| t.identifier == id) ||
+        data.to_not.iter().any(|t| t.identifier == id)) {
+
+        id = gen_nanoid_v1();
+    }
+    
+    id
+}
+
+pub(crate) fn gen_nanoid_v1() -> String {
     nanoid!(6,&[
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
