@@ -3,7 +3,7 @@
 version = 4
 
 [[package]]
-name = "Ag-core"
+name = "ag-core"
 version = "0.0.1"
 dependencies = [
  "chrono",

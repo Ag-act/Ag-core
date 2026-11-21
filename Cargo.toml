@@ -1,5 +1,5 @@
 [package]
-name = "Ag-core"
+name = "ag-core"
 version = "0.0.1"
 edition = "2024"
 license = "MIT"
