@@ -6,7 +6,7 @@ pub struct TasksUniversal {
     title: String,
     description: String,
     identifier: String,
-    completed: bool,
+    pub completed: bool,
     children: Vec<TasksUniversal>,
     category: bool,
 }
