@@ -1,6 +1,6 @@
 [package]
 name = "ag-core"
-version = "0.0.2"
+version = "0.0.3"
 edition = "2024"
 license = "MIT"
 description = "A library to be used to make unified todo managers"
