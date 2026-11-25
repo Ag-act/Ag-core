@@ -88,7 +88,7 @@ impl DataHandler {
         };
         Ok(data)
     }
-    pub fn default(config: Config) -> DataHandler {
+    pub fn default(config: &Config) -> DataHandler {
         match config.version {
             AgactVersions::V1 => {
                 Self::v1()
