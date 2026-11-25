@@ -6,6 +6,10 @@ license = "MIT"
 description = "A library to be used to make unified todo managers"
 repository = "https://github.com/Ag-act/Ag-core"
 
+[lib]
+name = "agcore"
+path = "src/lib.rs"
+
 [dependencies]
 chrono = { version = "0.4.45", features = ["serde"] }
 serde = { version = "1.0.229", features = ["derive"] }
