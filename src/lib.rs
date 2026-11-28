@@ -1,6 +1,8 @@
 uniffi::setup_scaffolding!();
 pub mod v1;
 pub mod universal;
+pub mod errors;
+pub mod ffi;
 
 use std::fs;
 use v1::{HomeDataV1};
@@ -8,9 +10,11 @@ use std::path::PathBuf;
 use universal::{DailyUniversal,TasksUniversal,TimeSinceUniversal};
 use confy::ConfyError;
 use serde::{Deserialize, Serialize};
+use crate::errors::AgError;
 use crate::v1::{gen_id_v1};
 
-#[derive(Serialize, Deserialize, uniffi::Record)]
+#[derive(Serialize, Deserialize)]
+#[serde(default)]
 pub struct Config {
     version: AgactVersions,
     home: String,
@@ -28,13 +32,13 @@ impl Default for Config {
 }
 
 impl Config {
-    pub fn write(&self) -> Result<(), ConfyError> {
-        confy::store("Ag-act", None, self)?;
+    pub fn write(&self) -> Result<(), AgError> {
+        confy::store("Ag-act", None, self).map_err(|e| AgError::ConfigWriteError(e.to_string()));
         Ok(())
     }
 
-    pub fn load() -> Result<Self, ConfyError> {
-        confy::load("Ag-act", None)
+    pub fn load() -> Result<Self, AgError> {
+        confy::load("Ag-act", None).map_err(|e| AgError::ConfigReadError(e.to_string()))
     }
 
     pub fn set_version(&mut self, versions: AgactVersions) {
@@ -81,10 +85,10 @@ pub struct DataHandler {
 }
 
 impl DataHandler {
-    pub fn new(data : &String) -> Result<DataHandler, toml::de::Error> {
+    pub fn new(data : &String) -> Result<DataHandler, AgError> {
         let data = DataHandler {
             app_data: {
-                toml::from_str(&data)?
+                toml::from_str(&data).map_err(|e| AgError::HomeWriteError(e.to_string()))?
             },
         };
         Ok(data)
