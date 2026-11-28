@@ -1,3 +1,4 @@
+use std::time::SystemTime;
 use chrono::{DateTime, Local};
 use crate::v1::{DailyV1, TasksV1, TimeSinceV1};
 
@@ -39,7 +40,7 @@ pub struct DailyUniversal {
     title: String,
     description: String,
     identifier: String,
-    last_completed: DateTime<Local>,
+    last_completed: SystemTime,
 }
 impl DailyUniversal {
     pub fn get_title(&self) -> String {
@@ -54,7 +55,7 @@ impl DailyUniversal {
         self.identifier.clone()
     }
 
-    pub fn last_completed(&self) -> DateTime<Local> {
+    pub fn last_completed(&self) -> SystemTime {
         self.last_completed.clone()
     }
 }
@@ -63,7 +64,7 @@ pub struct TimeSinceUniversal {
     title: String,
     description: String,
     identifier: String,
-    last_completed: DateTime<Local>,
+    last_completed: SystemTime,
 }
 impl TimeSinceUniversal {
     pub fn get_title(&self) -> String {
@@ -78,7 +79,7 @@ impl TimeSinceUniversal {
         self.identifier.clone()
     }
 
-    pub fn last_completed(&self) -> DateTime<Local> {
+    pub fn last_completed(&self) -> SystemTime {
         self.last_completed.clone()
     }
 }

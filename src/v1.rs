@@ -1,3 +1,4 @@
+use std::time::SystemTime;
 use chrono::{DateTime, Local};
 use nanoid::nanoid;
 use serde::{Deserialize, Serialize};
@@ -13,14 +14,14 @@ pub(crate) struct HomeDataV1 {
 pub(crate) struct DailyV1 {
     pub title: String,
     pub description: String,
-    pub last_completed: DateTime<Local>,
+    pub last_completed: SystemTime,
     pub identifier: String,
 }
 #[derive(Serialize,Deserialize, Debug)]
 pub(crate) struct TimeSinceV1 {
     pub title: String,
     pub description: String,
-    pub last_done: DateTime<Local>,
+    pub last_done: SystemTime,
     pub identifier: String,
 }
 #[derive(Serialize,Deserialize, Debug, Clone)]
