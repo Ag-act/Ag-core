@@ -1,3 +1,4 @@
+uniffi::setup_scaffolding!();
 pub mod v1;
 pub mod universal;
 
@@ -9,18 +10,18 @@ use confy::ConfyError;
 use serde::{Deserialize, Serialize};
 use crate::v1::{gen_id_v1};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, uniffi::Record)]
 pub struct Config {
     version: AgactVersions,
-    home: PathBuf,
-    projects: Vec<PathBuf>,
+    home: String,
+    projects: Vec<String>,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
             version : AgactVersions::V1,
-            home : PathBuf::new(),
+            home : String::new(),
             projects : Vec::new()
         }
     }
@@ -40,15 +41,15 @@ impl Config {
         self.version = versions;
     }
 
-    pub fn set_home(&mut self, home: PathBuf) {
+    pub fn set_home(&mut self, home: String) {
         self.home = home;
     }
 
-    pub fn set_projects(&mut self, projects: Vec<PathBuf>) {
+    pub fn set_projects(&mut self, projects: Vec<String>) {
         self.projects = projects;
     }
 
-    pub fn get_projects(&self) -> Vec<PathBuf> {
+    pub fn get_projects(&self) -> Vec<String> {
         self.projects.clone()
     }
 
@@ -56,12 +57,12 @@ impl Config {
         &self.version
     }
 
-    pub fn get_homes(&self) -> PathBuf {
+    pub fn get_homes(&self) -> String {
         self.home.clone()
     }
 }
 
-#[derive(PartialEq, Debug, Serialize, Deserialize, Default)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Default,uniffi::Enum)]
 pub enum AgactVersions {
     #[default]
     V1
@@ -155,8 +156,8 @@ impl DataHandler {
         }
     }
 
-    pub fn write(&self, path_buf: PathBuf) -> Result<(), toml::ser::Error>{
-        fs::write(path_buf.as_path(), toml::to_string(&self.app_data)?).expect("ERROR: Write Failed");
+    pub fn write(&self, string: String) -> Result<(), toml::ser::Error>{
+        fs::write(string, toml::to_string(&self.app_data)?).expect("ERROR: Write Failed");
         Ok(())
     }
 }
